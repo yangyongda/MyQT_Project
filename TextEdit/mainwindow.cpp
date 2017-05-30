@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(UpdateMenus()));
 
     window_mapper = new QSignalMapper(this);//创建信号发生器
-    connect(window_mapper, SIGNAL(mapped(QWidget*)), this, SLOT(set_active_sub_window(QWidget*)));//通过信号发生器设置活动窗口
+    connect(window_mapper, SIGNAL(mapped(QWidget*)), this, SLOT(setActiveSubWindow(QWidget*)));//通过信号发生器设置活动窗口
 
     UpdateWindowMenu();//更新窗口子菜单
     connect(ui->menuWindow_W, SIGNAL(aboutToShow()), this, SLOT(UpdateWindowMenu()));//当窗口子菜单将要出现时，就触发更新窗口子菜单
