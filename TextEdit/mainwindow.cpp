@@ -78,14 +78,6 @@ void MainWindow::initWindow()
 
     ui->statusBar->showMessage(QStringLiteral("欢迎使用多文档编辑器"));
 
-    QLabel *label = new QLabel(this);
-    label->setFrameStyle(QFrame::Box | QFrame::Sunken);//设置label的形状和阴影模式的,这里采用的box形状和凹陷模式
-    label->setText(QStringLiteral("<a href = \"http://blog.csdn.net/u012041204\">我的CSDN，欢迎关注</a>"));//设置文本内容
-    label->setTextFormat(Qt::RichText);//设置文本格式为富文本格式，又称多文本格式，用于跨平台使用的
-    label->setOpenExternalLinks(true);//运行打开label上的链接
-
-    ui->statusBar->addPermanentWidget(label);//将label附加到状态栏上，永久性的
-
     ui->actionNew->setStatusTip(QStringLiteral("创建一个文件"));
     ui->actionOpen->setStatusTip(QStringLiteral("打开一个已经存在的文件"));
     ui->actionSave->setStatusTip(QStringLiteral("保存文档到硬盘"));
