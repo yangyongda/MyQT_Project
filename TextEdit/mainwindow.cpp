@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "mymdi.h"
+#include "finddialog.h"
 #include <QFileDialog>
 #include <QMdiSubWindow>
 #include <QDebug>
@@ -10,6 +11,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QMenu>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -78,14 +80,6 @@ void MainWindow::initWindow()
 
     ui->statusBar->showMessage(QStringLiteral("欢迎使用多文档编辑器"));
 
-    QLabel *label = new QLabel(this);
-    label->setFrameStyle(QFrame::Box | QFrame::Sunken);//设置label的形状和阴影模式的,这里采用的box形状和凹陷模式
-    label->setText(QStringLiteral("<a href = \"http://blog.csdn.net/u012041204\">我的CSDN，欢迎关注</a>"));//设置文本内容
-    label->setTextFormat(Qt::RichText);//设置文本格式为富文本格式，又称多文本格式，用于跨平台使用的
-    label->setOpenExternalLinks(true);//运行打开label上的链接
-
-    ui->statusBar->addPermanentWidget(label);//将label附加到状态栏上，永久性的
-
     ui->actionNew->setStatusTip(QStringLiteral("创建一个文件"));
     ui->actionOpen->setStatusTip(QStringLiteral("打开一个已经存在的文件"));
     ui->actionSave->setStatusTip(QStringLiteral("保存文档到硬盘"));
@@ -103,7 +97,8 @@ void MainWindow::initWindow()
     ui->actionNext->setStatusTip(QStringLiteral("将焦点移动到下一个窗口"));
     ui->actionPrevious->setStatusTip(QStringLiteral("将焦点移动到前一个窗口"));
     ui->actionAbout->setStatusTip(QStringLiteral("显示本软件的介绍"));
-
+    ui->actionFind->setStatusTip(QStringLiteral("查找内容"));
+    ui->actionReplace->setStatusTip(QStringLiteral("替换内容"));
 }
 
 //更新Menu中按钮的状态
@@ -125,6 +120,8 @@ void MainWindow::UpdateMenus()
     ui->actionCascade->setEnabled(has_active_window);
     ui->actionNext->setEnabled(has_active_window);
     ui->actionPrevious->setEnabled(has_active_window);
+    ui->actionFind->setEnabled(has_active_window);
+    ui->actionReplace->setEnabled(has_active_window);
 
     //只有当有活动窗口，且有文字被选中时，剪切和复制功能才可以使用
     bool has_text_selection;
@@ -221,6 +218,60 @@ MyMdi* MainWindow::CreateMyMdi()
     //光标位置改变在状态栏显示行号和列号
     connect(child, SIGNAL(cursorPositionChanged()), this, SLOT(ShowTextRowCol()));
     return child;
+}
+
+void MainWindow::findNext(QString str, Qt::CheckState caseSensitive)
+{
+    bool status;
+    if(GetActiveWindow() != 0)
+    {
+        if(caseSensitive == Qt::Checked)
+        {
+            status = GetActiveWindow()->find(str, QTextDocument::FindCaseSensitively);
+        }
+        else
+        {
+            status = GetActiveWindow()->find(str);
+        }
+        if(status)
+        {
+            // 查找到后高亮显示
+            QPalette palette = GetActiveWindow()->palette();
+            palette.setColor(QPalette::Highlight,palette.color(QPalette::Active,QPalette::Highlight));
+            GetActiveWindow()->setPalette(palette);
+        }
+        else
+        {
+            QMessageBox::information(this,tr("注意"),tr("没有找到内容"),QMessageBox::Ok);
+        }
+    }
+}
+
+void MainWindow::findPrevious(QString str, Qt::CheckState caseSensitive)
+{
+    bool status;
+    if(GetActiveWindow() != 0)
+    {
+        if(caseSensitive == Qt::Checked)
+        {
+            status = GetActiveWindow()->find(str, QTextDocument::FindCaseSensitively|QTextDocument::FindBackward);
+        }
+        else
+        {
+            status = GetActiveWindow()->find(str,QTextDocument::FindBackward);
+        }
+        if(status)
+        {
+            // 查找到后高亮显示
+            QPalette palette = GetActiveWindow()->palette();
+            palette.setColor(QPalette::Highlight,palette.color(QPalette::Active,QPalette::Highlight));
+            GetActiveWindow()->setPalette(palette);
+        }
+        else
+        {
+            QMessageBox::information(this,tr("注意"),tr("没有找到内容"),QMessageBox::Ok);
+        }
+    }
 }
 
 QMdiSubWindow* MainWindow::FindMdiChild(const QString &file_name)
@@ -351,4 +402,18 @@ void MainWindow::on_actionAbout_triggered()
 {
     QMessageBox::about(this, QStringLiteral("关于本软件"), QStringLiteral("这是个多窗口文本编辑器\n 感谢yiminyangguang520的帮助!\n欢迎关注我的CSDN：http://blog.csdn.net/u012041204\n"
                                                                      "Github:https://github.com/yangyongda\n"));
+}
+
+void MainWindow::on_actionFind_triggered()
+{
+    FindDialog *findDialog = new FindDialog;
+    findDialog->setWindowTitle(QStringLiteral("查找"));
+    //绑定“下一个”和“上一个”信号和槽
+    QObject::connect(findDialog, SIGNAL(FindNext(QString,Qt::CheckState)), this, SLOT(findNext(QString,Qt::CheckState)));
+    QObject::connect(findDialog, SIGNAL(FindPrevious(QString,Qt::CheckState)), this, SLOT(findPrevious(QString,Qt::CheckState)));
+    //将光标移到开始位置
+    QTextCursor textCursor = GetActiveWindow()->textCursor();
+    textCursor.movePosition(QTextCursor::Start);
+    GetActiveWindow()->setTextCursor(textCursor);
+    findDialog->exec();
 }

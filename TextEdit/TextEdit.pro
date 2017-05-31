@@ -25,12 +25,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    mymdi.cpp
+    mymdi.cpp \
+    finddialog.cpp
 
 HEADERS  += mainwindow.h \
-    mymdi.h
+    mymdi.h \
+    finddialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    finddialog.ui
 
 RESOURCES += \
     images.qrc

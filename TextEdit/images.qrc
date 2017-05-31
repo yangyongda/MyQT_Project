@@ -13,5 +13,7 @@
         <file>icons/save.png</file>
         <file>icons/saveAs.png</file>
         <file>icons/undo.png</file>
+        <file>icons/find.png</file>
+        <file>icons/replace.png</file>
     </qresource>
 </RCC>

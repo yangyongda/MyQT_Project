@@ -38,8 +38,12 @@ private slots:
     void closeEvent(QCloseEvent *event);
     void ShowTextRowCol();
     MyMdi *CreateMyMdi();
+    void findNext(QString str,Qt::CheckState caseSensitive);
+    void findPrevious(QString str, Qt::CheckState caseSensitive);
 
 
+
+    //信号和槽绑定的另一种方式（命名法）
     void on_actionNew_triggered();
     void on_actionOpen_triggered();
     void on_actionSave_triggered();
@@ -57,6 +61,7 @@ private slots:
     void on_actionPrevious_triggered();
     void on_actionNext_triggered();
     void on_actionAbout_triggered();
+    void on_actionFind_triggered();
 };
 
 #endif // MAINWINDOW_H

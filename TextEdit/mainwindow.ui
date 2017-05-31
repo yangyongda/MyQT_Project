@@ -32,7 +32,7 @@
      <x>0</x>
      <y>0</y>
      <width>695</width>
-     <height>25</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -75,9 +75,17 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuSearch">
+    <property name="title">
+     <string>Search(&amp;S)</string>
+    </property>
+    <addaction name="actionFind"/>
+    <addaction name="actionReplace"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit_E"/>
    <addaction name="menuWindow_W"/>
+   <addaction name="menuSearch"/>
    <addaction name="menuHelp_H"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -97,6 +105,9 @@
    <addaction name="separator"/>
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
+   <addaction name="separator"/>
+   <addaction name="actionFind"/>
+   <addaction name="actionReplace"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNew">
@@ -264,6 +275,30 @@
    </property>
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionFind">
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/icons/icons/find.png</normaloff>:/icons/icons/find.png</iconset>
+   </property>
+   <property name="text">
+    <string>Find</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionReplace">
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/icons/icons/replace.png</normaloff>:/icons/icons/replace.png</iconset>
+   </property>
+   <property name="text">
+    <string>Replace</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>
