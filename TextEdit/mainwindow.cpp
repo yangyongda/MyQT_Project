@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "mymdi.h"
 #include "finddialog.h"
+#include "replacedialog.h"
 #include <QFileDialog>
 #include <QMdiSubWindow>
 #include <QDebug>
@@ -225,8 +226,9 @@ void MainWindow::findNext(QString str, Qt::CheckState caseSensitive)
     bool status;
     if(GetActiveWindow() != 0)
     {
-        if(caseSensitive == Qt::Checked)
+        if(caseSensitive == Qt::Checked) //匹配大小写
         {
+            //返回查找的状态true or false
             status = GetActiveWindow()->find(str, QTextDocument::FindCaseSensitively);
         }
         else
@@ -254,6 +256,7 @@ void MainWindow::findPrevious(QString str, Qt::CheckState caseSensitive)
     {
         if(caseSensitive == Qt::Checked)
         {
+            //QTextDocument::FindBackward：向后查找
             status = GetActiveWindow()->find(str, QTextDocument::FindCaseSensitively|QTextDocument::FindBackward);
         }
         else
@@ -269,8 +272,59 @@ void MainWindow::findPrevious(QString str, Qt::CheckState caseSensitive)
         }
         else
         {
+            QMessageBox::information(this, QStringLiteral("注意"),QStringLiteral("没有找到内容"),QMessageBox::Ok);
+        }
+    }
+}
+
+void MainWindow::replace(QString source, QString target, Qt::CheckState caseSensitive)
+{
+    bool status;
+    if(GetActiveWindow() != 0)
+    {
+        //先查找看是否有要被替换的内容
+        if(caseSensitive == Qt::Checked)
+        {
+            status = GetActiveWindow()->find(source, QTextDocument::FindCaseSensitively);
+        }
+        else
+        {
+            status = GetActiveWindow()->find(source);
+        }
+        if(status)
+        {
+            // 查找到后高亮显示
+            QPalette palette = GetActiveWindow()->palette();
+            palette.setColor(QPalette::Highlight,palette.color(QPalette::Active,QPalette::Highlight));
+            GetActiveWindow()->setPalette(palette);
+            //确认是否真的要替换
+            if(QMessageBox::information(this,tr("注意"),tr("确定要替换吗"),QMessageBox::Ok, QMessageBox::Cancel)==QMessageBox::Ok)
+            {
+                QString content = GetActiveWindow()->toPlainText(); //获取所有内容
+                if(caseSensitive == Qt::Checked)
+                    content.replace(content.indexOf(source), source.size(), target); //大小写敏感替换
+                else
+                    content.replace(content.indexOf(source, 0, Qt::CaseInsensitive), source.size(), target); //大小写不敏感替换
+                GetActiveWindow()->setText(content); //为窗口设置修改后的内容
+            }
+        }
+        else
+        {
             QMessageBox::information(this,tr("注意"),tr("没有找到内容"),QMessageBox::Ok);
         }
+    }
+}
+
+void MainWindow::replaceAll(QString source, QString target, Qt::CheckState caseSensitive)
+{
+    if(QMessageBox::information(this,tr("注意"),tr("确定要全部替换吗"),QMessageBox::Ok, QMessageBox::Cancel)==QMessageBox::Ok)
+    {
+        QString content = GetActiveWindow()->toPlainText();
+        if(caseSensitive == Qt::Checked)
+            content.replace(source, target); //替换全部
+        else
+            content.replace(source, target, Qt::CaseInsensitive); //大小写不敏感全部替换
+        GetActiveWindow()->setText(content);
     }
 }
 
@@ -416,4 +470,17 @@ void MainWindow::on_actionFind_triggered()
     textCursor.movePosition(QTextCursor::Start);
     GetActiveWindow()->setTextCursor(textCursor);
     findDialog->exec();
+}
+
+void MainWindow::on_actionReplace_triggered()
+{
+    ReplaceDialog *replaceDialog = new ReplaceDialog;
+    replaceDialog->setWindowTitle(QStringLiteral("替换"));
+    QObject::connect(replaceDialog, SIGNAL(sendReplace(QString,QString,Qt::CheckState)),this, SLOT(replace(QString,QString,Qt::CheckState)));
+    QObject::connect(replaceDialog, SIGNAL(sendReplaceAll(QString,QString,Qt::CheckState)), this, SLOT(replaceAll(QString,QString,Qt::CheckState)));
+    //将光标移到开始位置
+    QTextCursor textCursor = GetActiveWindow()->textCursor();
+    textCursor.movePosition(QTextCursor::Start);
+    GetActiveWindow()->setTextCursor(textCursor);
+    replaceDialog->exec();
 }

@@ -40,6 +40,9 @@ private slots:
     MyMdi *CreateMyMdi();
     void findNext(QString str,Qt::CheckState caseSensitive);
     void findPrevious(QString str, Qt::CheckState caseSensitive);
+    void replace(QString source, QString target, Qt::CheckState caseSensitive);
+    void replaceAll(QString source, QString target, Qt::CheckState caseSensitive);
+
 
 
 
@@ -62,6 +65,7 @@ private slots:
     void on_actionNext_triggered();
     void on_actionAbout_triggered();
     void on_actionFind_triggered();
+    void on_actionReplace_triggered();
 };
 
 #endif // MAINWINDOW_H
