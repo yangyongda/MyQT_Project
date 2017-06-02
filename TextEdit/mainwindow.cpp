@@ -306,6 +306,7 @@ void MainWindow::replace(QString source, QString target, Qt::CheckState caseSens
                 else
                     content.replace(content.indexOf(source, 0, Qt::CaseInsensitive), source.size(), target); //大小写不敏感替换
                 GetActiveWindow()->setText(content); //为窗口设置修改后的内容
+                ui->statusBar->showMessage(QStringLiteral("替换成功"), 2000);
             }
         }
         else
@@ -325,6 +326,7 @@ void MainWindow::replaceAll(QString source, QString target, Qt::CheckState caseS
         else
             content.replace(source, target, Qt::CaseInsensitive); //大小写不敏感全部替换
         GetActiveWindow()->setText(content);
+        ui->statusBar->showMessage(QStringLiteral("替换成功"), 2000);
     }
 }
 
