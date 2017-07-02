@@ -1,3 +1,5 @@
 *_64bit-Debug
 qt
 *_32bit-Debug
+*.pro.user
+*.pro.user.*
